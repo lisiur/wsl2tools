@@ -1,0 +1,10 @@
+@import '@unocss/reset/normalize.css';
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+.n-input-number {
+    width: 100%;
+}
