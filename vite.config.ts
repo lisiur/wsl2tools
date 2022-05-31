@@ -6,6 +6,7 @@ import transformerDirectives from "@unocss/transformer-directives";
 import transformerVariantGroup from "@unocss/transformer-variant-group";
 import Unocss from 'unocss/vite'
 import vueI18n from '@intlify/vite-plugin-vue-i18n'
+import vueJsx from '@vitejs/plugin-vue-jsx'
 import * as path from "path";
 
 const UnocssAlias = {
@@ -25,12 +26,9 @@ const UnocssAlias = {
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    esbuild: {
-        jsxFactory: 'h',
-        jsxFragment: 'Fragment'
-    },
     plugins: [
         vue(),
+        vueJsx({}),
         // vueI18n({
         //     include: path.resolve(__dirname, './i18n/**')
         // }),

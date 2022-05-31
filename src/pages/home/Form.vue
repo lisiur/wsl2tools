@@ -12,7 +12,11 @@
     <n-form-item :label="t('Target Address')">
       <n-input-group>
         <n-input v-model:value="model.targetAddress"></n-input>
-        <n-button @click="fillWithWslIpHandler" type="primary">{{t('Fill wsl ip')}}</n-button>
+        <n-button
+            type="primary"
+            :loading="getWslIpLoading"
+            @click="fillWithWslIpHandler"
+        >{{t('Fill wsl ip')}}</n-button>
       </n-input-group>
     </n-form-item>
     <n-form-item :label="t('Target Port')">
@@ -22,28 +26,33 @@
 </template>
 
 <script lang="ts" setup>
-import {PortRedirection, getWsl2Ip} from "@/pages/home/portRedirection";
+import {PortRedirection, getWsl2Ip} from "./api";
 import {ref, toRaw, watch} from "vue";
 import {useI18n} from "vue-i18n"
+import {useTask} from "@/compositions/task";
+import {useMessage} from 'naive-ui'
 
 interface Props {
   model: PortRedirection,
 }
-interface Events {}
+interface Events {
+}
 const props = defineProps<Props>()
-const emits = defineEmits<Props>()
+const emits = defineEmits<Events>()
 defineExpose({})
 
 const {t} = useI18n()
+const message = useMessage()
 
 const model = ref<null | PortRedirection>(props.model)
 
+const {exec: doGetWsl2Ip, running: getWslIpLoading} = useTask(getWsl2Ip, message.error)
+
 async function fillWithWslIpHandler() {
   if (model.value) {
-    model.value.targetAddress = await getWsl2Ip()
+    model.value.targetAddress = await doGetWsl2Ip()
   }
 }
-
 </script>
 
 <style scoped>

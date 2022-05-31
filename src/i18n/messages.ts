@@ -16,6 +16,9 @@ export default {
     "delete": "删除",
     "Delete": "删除",
     "Fill wsl ip": "使用 wsl ip",
+    "Refresh": "刷新",
+    "Failed to get wsl ip": "获取 wsl ip 失败",
+    "Confirm to delete?": "确认删除吗？"
   },
   enUS: {},
 }

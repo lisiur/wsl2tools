@@ -1,9 +1,9 @@
-import {h} from 'vue'
 import mitt from 'mitt'
-import {runCommand} from '@/commands'
-import {computed, onMounted, ref} from "vue";
+import {computed, ref} from "vue";
 import {i18n} from '@/i18n'
-import {DataTableColumns, NButton, NSpace, NIcon, NSpin} from 'naive-ui'
+import {PortRedirection, getPortRedirectionList, deletePortRedirection} from './api'
+import {chainedTask, useTask} from '@/compositions/task'
+import {DataTableColumns, NButton, NSpace, NIcon, NPopconfirm} from 'naive-ui'
 import {
     NotepadEdit20Regular as EditIcon,
     Delete20Regular as DeleteIcon,
@@ -11,18 +11,17 @@ import {
 
 const {t} = i18n.global
 
-export interface PortRedirection {
-    listenAddress: string
-    listenPort: number
-    targetAddress: string
-    targetPort: number
-}
-
 export function useList() {
     const emitter = mitt<{ edit: PortRedirection, delete: PortRedirection }>()
     const data = ref<Array<any>>([])
-    const deleteLoading = ref(false)
+    const {exec: fetchList, running: fetchListLoading} = useTask(
+        () => getPortRedirectionList()
+            .then((value) => {
+                data.value = value
+            })
+    )
     const columns = computed<DataTableColumns<PortRedirection>>(() => {
+        const {exec: doDelete, running: deleteLoading} = useTask(deletePortRedirection)
         return [
             {
                 title: t('Listen Address'),
@@ -44,43 +43,43 @@ export function useList() {
                 title: t('Action'),
                 key: 'action',
                 render(row) {
+                    const deleteAndReload = chainedTask(doDelete.bind(null, row), fetchList)
                     return (<NSpace>
                         <NButton type="primary" size="small" quaternary
                                  onClick={() => emitter.emit('edit', row)}
                         >
                             {{
-                                icon: () => ( <NIcon component={EditIcon}></NIcon> ),
-                                default: () => ( t('edit') )
+                                icon: () => (<NIcon component={EditIcon}></NIcon>),
+                                default: () => (t('edit'))
                             }}
                         </NButton>
 
-                        <NButton type="error" size="small" quaternary loading={deleteLoading.value}
-                                 onClick={() => emitter.emit('delete', row)}>
+                        <NPopconfirm
+                            onPositiveClick={deleteAndReload}
+                        >
                             {{
-                                icon: () => ( <NIcon component={DeleteIcon}></NIcon> ),
-                                default: () => ( t('delete') )
+                                trigger: () => (
+                                    <NButton type="error" size="small" quaternary loading={deleteLoading.value}>
+                                        {{
+                                            icon: () => (<NIcon component={DeleteIcon}></NIcon>),
+                                            default: () => (t('delete'))
+                                        }}
+                                    </NButton>
+                                ),
+                                default: () => t("Confirm to delete?")
                             }}
-                        </NButton>
+                        </NPopconfirm>
                     </NSpace>)
                 }
             },
         ]
     })
-    const fetchListLoading = ref(false);
-    const fetchList = async () => {
-        fetchListLoading.value = true
-        try {
-            data.value = await getPortRedirectionList()
-        } finally {
-            fetchListLoading.value = false
-        }
-    }
     const newPortRedirection = () => {
         return {
             listenAddress: '0.0.0.0',
-            listenPort: 0,
+            listenPort: null,
             targetAddress: '',
-            targetPort: 0,
+            targetPort: null,
         }
     }
     return {
@@ -90,47 +89,5 @@ export function useList() {
         data,
         emitter,
         newPortRedirection,
-        deleteLoading,
     }
-}
-
-async function execPowershellCommand(script: string) {
-    return await runCommand(`PowerShell.exe ${script}`)
-}
-
-export async function getPortRedirectionList() {
-    let output = await execPowershellCommand("netsh interface portproxy show v4tov4")
-    return output.trim().split('\n').slice(4).map(item => {
-        const [listenAddress, listenPort, targetAddress, targetPort] = item.split(/\s+/)
-        return {
-            listenAddress,
-            listenPort: Number(listenPort),
-            targetAddress,
-            targetPort: Number(targetPort),
-        }
-    })
-}
-
-export async function updatePortRedirection(newPr: PortRedirection, oldPr: PortRedirection) {
-    await deletePortRedirection(oldPr)
-    await createPortRedirection(newPr)
-}
-
-export async function createPortRedirection(pr: PortRedirection) {
-    const command = `netsh interface portproxy add v4tov4 listenport=${pr.listenPort} listenaddress=${pr.listenAddress} connectport=${pr.targetPort} connectaddress=${pr.targetAddress}`;
-    await execPowershellCommand(command)
-}
-
-export async function deletePortRedirection(pr: PortRedirection) {
-    const command = `netsh interface portproxy delete v4tov4 listenport=${pr.listenPort} listenaddress=${pr.listenAddress}`;
-    await execPowershellCommand(command)
-}
-
-export async function getWsl2Ip() {
-    const command = `wsl -- ip -o -4 -json addr list eth0
-                    | ConvertFrom-Json
-                    | %{ $_.addr_info.local }
-                    | ?{ $_ }`
-    let output = await execPowershellCommand(command)
-    return output.trim()
 }
