@@ -1,21 +1,20 @@
-<template>
-  <n-config-provider
-      :theme="currentNaiveUiTheme"
-      :theme-overrides="naiveUiOverrides"
-      :locale="currentNaiveUiLang"
-      :date-locale="currentNaiveUiDateLang"
-  >
-    <n-dialog-provider>
-      <n-message-provider>
-        <router-view></router-view>
-      </n-message-provider>
-    </n-dialog-provider>
-  </n-config-provider>
+<template lang="pug">
+n-config-provider(
+  :theme="currentNaiveUiTheme"
+  :theme-overrides="naiveUiOverrides"
+  :locale="currentNaiveUiLang"
+  :date-locale="currentNaiveUiDateLang"
+  :breakpoints="breakpoints"
+)
+  n-dialog-provider
+    n-message-provider
+      router-view
 </template>
 
 <script lang="ts" setup>
 import {computed} from "vue";
 import {NConfigProvider, darkTheme,} from "naive-ui";
+import {breakpoints} from './compositions/breakpoint'
 import {currentNaiveUiLang, currentNaiveUiDateLang} from './i18n'
 import {setTheme, getTheme, getNaiveUiThemeOverrides} from './styles/themes'
 

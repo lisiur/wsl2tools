@@ -1,13 +1,21 @@
 import {onMounted, onBeforeUnmount, ref, computed} from 'vue'
 
 export enum Breakpoint {
-    default = 0,
-    xs = 320,
+    xs = 0,
     sm = 640,
-    md = 768,
-    lg = 1024,
-    xl = 1280,
-    xxl = 1536,
+    md = 1024,
+    lg = 1280,
+    xl = 1536,
+    xxl = 1920,
+}
+
+export const breakpoints = {
+    xs: Breakpoint.xs,
+    sm: Breakpoint.sm,
+    md: Breakpoint.md,
+    lg: Breakpoint.lg,
+    xl: Breakpoint.xl,
+    xxl: Breakpoint.xxl,
 }
 
 const Breakpoints = [
@@ -17,11 +25,10 @@ const Breakpoints = [
     Breakpoint.md,
     Breakpoint.sm,
     Breakpoint.xs,
-    Breakpoint.default,
 ]
 
 export function useBreakpoint(handler?: (bp: Breakpoint) => void) {
-    const bp = ref<Breakpoint>(Breakpoint.default);
+    const bp = ref<Breakpoint>(Breakpoint.xs);
     const isMobile = computed(() => bp.value < Breakpoint.md)
     const isPc = computed(() => bp.value >= Breakpoint.md)
 

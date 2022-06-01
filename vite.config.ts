@@ -4,6 +4,8 @@ import Components from "unplugin-vue-components/vite"
 import {NaiveUiResolver} from "unplugin-vue-components/resolvers"
 import transformerDirectives from "@unocss/transformer-directives";
 import transformerVariantGroup from "@unocss/transformer-variant-group";
+import extractorPug from '@unocss/extractor-pug'
+import {extractorSplit} from '@unocss/core'
 import Unocss from 'unocss/vite'
 import vueI18n from '@intlify/vite-plugin-vue-i18n'
 import vueJsx from '@vitejs/plugin-vue-jsx'
@@ -36,6 +38,10 @@ export default defineConfig({
             resolvers: [NaiveUiResolver()],
         }),
         Unocss({
+            extractors: [
+                extractorPug(),
+                extractorSplit,
+            ],
             transformers: [transformerVariantGroup(), transformerDirectives()],
             theme: {
                 colors: {
