@@ -5,9 +5,18 @@ const {t} = i18n.global
 
 export interface PortRedirection {
     listenAddress: string
-    listenPort: number
+    listenPort: number | null
     targetAddress: string
-    targetPort: number
+    targetPort: number | null
+}
+
+export function newPortRedirection(): PortRedirection {
+    return {
+        listenAddress: '0.0.0.0',
+        listenPort: null,
+        targetAddress: '',
+        targetPort: null,
+    }
 }
 
 async function execPowershellCommand(script: string) {
@@ -38,7 +47,8 @@ export async function createPortRedirection(pr: PortRedirection) {
 }
 
 export async function deletePortRedirection(pr: PortRedirection) {
-    const command = `netsh interface portproxy delete v4tov4 listenport=${pr.listenPort} listenaddress=${pr.listenAddress}`;
+    const listenPort = Number.isNaN(pr.listenPort) ? 'null' : pr.listenPort
+    const command = `netsh interface portproxy delete v4tov4 listenport=${listenPort} listenaddress=${pr.listenAddress}`;
     await execPowershellCommand(command)
 }
 

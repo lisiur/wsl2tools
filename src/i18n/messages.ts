@@ -18,7 +18,15 @@ export default {
     "Fill wsl ip": "使用 wsl ip",
     "Refresh": "刷新",
     "Failed to get wsl ip": "获取 wsl ip 失败",
-    "Confirm to delete?": "确认删除吗？"
+    "Confirm to delete?": "确认删除吗？",
+    "Confirm": "确定",
+    "confirm": "确定",
+    "Save": "保存",
+    "save": "保存",
+    "Please input listen address": "请输入监听地址",
+    "Please input listen port": "请输入监听端口",
+    "Please input target address": "请输入目标地址",
+    "Please input target port": "请输入目标端口",
   },
   enUS: {},
 }
