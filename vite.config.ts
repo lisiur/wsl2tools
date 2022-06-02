@@ -5,10 +5,12 @@ import {NaiveUiResolver} from "unplugin-vue-components/resolvers"
 import transformerDirectives from "@unocss/transformer-directives";
 import transformerVariantGroup from "@unocss/transformer-variant-group";
 import extractorPug from '@unocss/extractor-pug'
+// @ts-ignore
 import {extractorSplit} from '@unocss/core'
 import Unocss from 'unocss/vite'
 import vueI18n from '@intlify/vite-plugin-vue-i18n'
 import vueJsx from '@vitejs/plugin-vue-jsx'
+import {createHtmlPlugin} from 'vite-plugin-html'
 import * as path from "path";
 
 const UnocssAlias = {
@@ -30,6 +32,14 @@ const UnocssAlias = {
 export default defineConfig({
     plugins: [
         vue(),
+        createHtmlPlugin({
+            inject: {
+                data: {
+                    injectScript: process.env.MODE === 'development' ? `<script src="http://localhost:8098"></script>` :
+                        '',
+                }
+            }
+        }),
         vueJsx({}),
         // vueI18n({
         //     include: path.resolve(__dirname, './i18n/**')

@@ -5,9 +5,18 @@ const {t} = i18n.global
 
 export interface PortRedirection {
     listenAddress: string
-    listenPort: number
+    listenPort: number | null
     targetAddress: string
-    targetPort: number
+    targetPort: number | null
+}
+
+export function newPortRedirection(): PortRedirection {
+    return {
+        listenAddress: '0.0.0.0',
+        listenPort: null,
+        targetAddress: '',
+        targetPort: null,
+    }
 }
 
 async function execPowershellCommand(script: string) {
@@ -24,12 +33,21 @@ export async function getPortRedirectionList() {
             targetAddress,
             targetPort: Number(targetPort),
         }
-    })
+    }).reverse()
 }
 
 export async function updatePortRedirection(newPr: PortRedirection, oldPr: PortRedirection) {
-    await deletePortRedirection(oldPr)
-    await createPortRedirection(newPr)
+    if (newPr.listenAddress !== oldPr.listenAddress || newPr.listenPort !== oldPr.listenPort) {
+        await deletePortRedirection(oldPr)
+        await createPortRedirection(newPr)
+    } else {
+        const command = `netsh interface portproxy set v4tov4 listenport=${oldPr.listenPort} listenaddress=${oldPr.listenAddress} connectport=${newPr.targetPort} connectaddress=${newPr.targetAddress}`;
+        await execPowershellCommand(command)
+    }
+}
+
+export async function updatePortRedirectionTargetAddress(pr: PortRedirection, address: string) {
+    await updatePortRedirection({...pr, targetAddress: address}, pr)
 }
 
 export async function createPortRedirection(pr: PortRedirection) {
@@ -38,7 +56,8 @@ export async function createPortRedirection(pr: PortRedirection) {
 }
 
 export async function deletePortRedirection(pr: PortRedirection) {
-    const command = `netsh interface portproxy delete v4tov4 listenport=${pr.listenPort} listenaddress=${pr.listenAddress}`;
+    const listenPort = Number.isNaN(pr.listenPort) ? 'null' : pr.listenPort
+    const command = `netsh interface portproxy delete v4tov4 listenport=${listenPort} listenaddress=${pr.listenAddress}`;
     await execPowershellCommand(command)
 }
 

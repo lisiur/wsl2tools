@@ -1,12 +1,18 @@
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
-use tauri::{command};
+
+use tauri::{
+    command,
+    plugin::{Builder, TauriPlugin},
+    Runtime,
+};
+
 use std::process::Command;
 
 const CREATE_NO_WINDOW:u32 = 0x08000000;
 
 #[command]
-pub async fn run_command(command: String, args: Option<Vec<String>>) -> Result<String, String> {
+pub async fn run(command: String, args: Option<Vec<String>>) -> Result<String, String> {
     let mut cmd = Command::new(command);
 
     #[cfg(target_os = "windows")]
@@ -25,4 +31,12 @@ pub async fn run_command(command: String, args: Option<Vec<String>>) -> Result<S
         let msg = stdout.to_string();
         Ok(msg + &stderr)
     }
+}
+
+pub fn init<R: Runtime>() -> TauriPlugin<R> {
+    Builder::new("command")
+        .invoke_handler(tauri::generate_handler![
+            run
+        ])
+        .build()
 }

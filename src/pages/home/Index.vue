@@ -6,143 +6,98 @@
                 n-button(
                     tertiary
                     type="primary"
-                    :loading="fetchListLoading"
-                    @click="() => fetchList()"
+                    :loading="refreshLoading"
+                    @click="refreshTable"
                 )
                     template(#icon)
                         n-icon(:component="RefreshIcon")
                     | {{$t('Refresh')}}
                 n-button(
                     type="primary"
-                    @click="showCreateModal(newPortRedirection())"
+                    @click="createHandler"
                 )
                     template(#icon)
                         n-icon(:component="AddIcon")
                     | {{ $t('Create') }}
         n-gi
-            n-spin(:show="fetchListLoading")
-                n-data-table(:columns="columns" :data="data")
-n-modal(
-    v-model:show="createModalVisible"
-    preset="dialog"
-    :title="t('create')"
-    :positive-text="t('create')"
-    :negative-text="t('cancel')"
-    :loading="createLoading"
-    @positive-click="createHandler"
-)
-    Form(
-        v-if="creatingModel"
-        :model="creatingModel"
-    )
+            Table(:wsl-ip="wslIp" @edit="updateHandler")
 
-n-modal(
-    v-model:show="editModalVisible"
-    preset="dialog"
-    :title="t('edit')"
-    :positive-text="t('modify')"
-    :negative-text="t('cancel')"
-    :loading="updateLoading"
-    @positive-click="updateHandler"
-)
-    Form(
-        v-if="editingModel"
-        :model="editingModel"
-    )
+FormModal(:config="createFormModalConfig" :component="Form")
+FormModal(:config="editFormModalConfig" :component="Form")
+
 </template>
 
 <script lang="ts" setup>
-import {onMounted} from "vue";
+import {computed, onMounted, ref} from "vue";
 import {useI18n} from 'vue-i18n'
 import {
     type PortRedirection,
+    newPortRedirection,
     updatePortRedirection,
     createPortRedirection,
+    getWsl2Ip,
 } from './api'
-import {chainedTask, useTask} from '@/compositions/task'
-import {useList} from './portRedirection'
 import Form from "./Form.vue"
-import {useModal} from "@/compositions/modal";
+import useTableUi from "./Table"
+import {FormModal, useFormModal} from '@/components/formModal'
 import {
-    AddSquare24Filled as AddIcon,
-    ArrowClockwise24Filled as RefreshIcon,
-} from '@vicons/fluent'
+    Plus as AddIcon,
+    Redo as RefreshIcon,
+} from '@vicons/fa'
 import {useMessage} from "naive-ui";
-
-interface Props {
-}
-
-interface Events {
-}
-
-const props = defineProps<Props>()
-const emits = defineEmits<Props>()
-defineExpose({})
-
+import {useTask} from "@/compositions/task";
 
 const {t} = useI18n()
 const message = useMessage()
 
-const {
-    emitter,
-    data,
-    columns,
-    fetchList,
-    fetchListLoading,
-    newPortRedirection,
-} = useList()
+const wslIp = ref('')
+onMounted(async () => {
+    wslIp.value = await getWsl2Ip()
+})
 
-const {
-    visible: createModalVisible,
-    show: showCreateModal,
-    model: creatingModel
-} = useModal<PortRedirection>()
+const {Table, reload, loading: tableLoading, loadFirstPage} = useTableUi()
 
-const {
-    visible: editModalVisible,
-    show: showEditModal,
-    model: editingModel
-} = useModal<PortRedirection>()
+const {show: showCreateFormModal, config: createFormModalConfig } = useFormModal()
+const {show: showEditFormModal, config: editFormModalConfig } = useFormModal()
 
-const {exec: doUpdate, running: updateLoading} = useTask(updatePortRedirection, message.error)
-const {exec: doCreate, running: createLoading} = useTask(createPortRedirection, message.error)
+const {exec: doGetWsl2Ip, running: getWsl2IpLoading} = useTask(getWsl2Ip)
+const refreshLoading = computed(() => {
+    return getWsl2IpLoading.value || tableLoading.value
+})
 
-const createPipeline = chainedTask(
-    () => doCreate(creatingModel.value as PortRedirection).then(() => {
-        createModalVisible.value = false
-    }),
-    fetchList,
-)
-
-const updatePipeline = chainedTask(
-    () => doUpdate(editingModel.value as PortRedirection, oldPortRedirection as PortRedirection).then(() => {
-        editModalVisible.value = false
-    }),
-    fetchList,
-)
-
+async function refreshTable() {
+    wslIp.value = await doGetWsl2Ip()
+    await reload()
+}
 
 async function createHandler() {
-    await createPipeline()
-    return false
+    const [positive] = await showCreateFormModal({
+        title: t('Create'),
+        positiveText: t('Create'),
+        negativeText: t('Cancel'),
+        model: newPortRedirection(),
+        positiveHandler: async (model) => {
+            await createPortRedirection(model)
+        }
+    })
+    if (positive) {
+        await loadFirstPage()
+    }
 }
 
-async function updateHandler() {
-    await updatePipeline()
-    return false
+async function updateHandler(model: PortRedirection) {
+    const oldPortRedirection = {...model}
+    const [positive] = await showEditFormModal({
+        title: t('Edit'),
+        positiveText: t('Save'),
+        negativeText: t('Cancel'),
+        model,
+        positiveHandler: async (model) => {
+            await updatePortRedirection(model, oldPortRedirection)
+        }
+    })
+    if (positive) {
+        await loadFirstPage()
+    }
 }
-
-onMounted(() => {
-    fetchList()
-})
-
-// 编辑配置
-let oldPortRedirection: PortRedirection | null = null
-emitter.on('edit', (row) => {
-    oldPortRedirection = {...row}
-    showEditModal(row)
-})
 </script>
-
-<style scoped>
-</style>

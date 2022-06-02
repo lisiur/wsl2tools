@@ -4,15 +4,8 @@ export async function runCommand(command: string, args: string[] = []): Promise<
     const chunks = command.trim().split(/\s+/);
     command = chunks[0]
     args = [...chunks.slice(1), ...args]
-    return await invoke<string>("run_command", {
+    return await invoke<string>("plugin:command|run", {
         command,
-        args,
-    })
-}
-
-export async function runScript(script: string, args?: Array<string>): Promise<string> {
-    return await invoke<string>("run_script", {
-        script,
         args,
     })
 }
