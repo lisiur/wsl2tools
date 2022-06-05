@@ -33,12 +33,21 @@ export async function getPortRedirectionList() {
             targetAddress,
             targetPort: Number(targetPort),
         }
-    })
+    }).reverse()
 }
 
 export async function updatePortRedirection(newPr: PortRedirection, oldPr: PortRedirection) {
-    await deletePortRedirection(oldPr)
-    await createPortRedirection(newPr)
+    if (newPr.listenAddress !== oldPr.listenAddress || newPr.listenPort !== oldPr.listenPort) {
+        await deletePortRedirection(oldPr)
+        await createPortRedirection(newPr)
+    } else {
+        const command = `netsh interface portproxy set v4tov4 listenport=${oldPr.listenPort} listenaddress=${oldPr.listenAddress} connectport=${newPr.targetPort} connectaddress=${newPr.targetAddress}`;
+        await execPowershellCommand(command)
+    }
+}
+
+export async function updatePortRedirectionTargetAddress(pr: PortRedirection, address: string) {
+    await updatePortRedirection({...pr, targetAddress: address}, pr)
 }
 
 export async function createPortRedirection(pr: PortRedirection) {

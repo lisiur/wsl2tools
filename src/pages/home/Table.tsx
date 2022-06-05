@@ -1,8 +1,28 @@
 import {computed, defineComponent, PropType} from "vue";
-import {type DataTableColumns, NButton, NIcon, NPopconfirm, NSpace} from "naive-ui";
-import {deletePortRedirection, getPortRedirectionList, type PortRedirection} from "@/pages/home/api";
+import {
+    type DataTableColumns,
+    NButton,
+    NIcon,
+    NPopconfirm,
+    NSpace,
+    NEl,
+    NPopselect,
+    NSpin,
+    useMessage
+} from "naive-ui";
+import {
+    type PortRedirection,
+    deletePortRedirection,
+    getPortRedirectionList,
+    updatePortRedirectionTargetAddress,
+} from "@/pages/home/api";
 import {chainedTask, useTask} from "@/compositions/task";
-import {Delete20Regular as DeleteIcon, NotepadEdit20Regular as EditIcon} from "@vicons/fluent";
+import {
+    Trash as DeleteIcon,
+    Edit as EditIcon,
+    Linux as LinuxIcon,
+    Windows as WindowsIcon,
+} from "@vicons/fa";
 import {useI18n} from "vue-i18n";
 import {useDataTable, DataTable} from "@/components/dataTable";
 
@@ -11,20 +31,21 @@ async function dataTableService(params: { pageSize: number, pageNum: number }) {
 }
 
 const props = {
+    wslIp: String,
     onEdit: Function as PropType<(v: PortRedirection) => void>,
 }
 
 export type TableProps = typeof props
 
-export default function Table() {
+export default function useTableUi() {
     const {loading, reload, loadFirstPage, dataList: data, config} = useDataTable(dataTableService)
     return {
         Table: defineComponent({
             props,
             setup(props) {
                 const {t} = useI18n()
+                const message = useMessage()
                 const columns = computed<DataTableColumns<PortRedirection>>(() => {
-                    const {exec: doDelete, running: deleteLoading} = useTask(deletePortRedirection)
                     return [
                         {
                             title: t('Listen Address'),
@@ -40,6 +61,61 @@ export default function Table() {
                             title: t('Target Address'),
                             key: 'targetAddress',
                             align: 'center',
+                            render(row) {
+                                const {exec: doUpdate, running: updateLoading} = useTask(updatePortRedirectionTargetAddress)
+                                const updateAndReload = async () => {
+                                    if (!props.wslIp) {
+                                        message.warning(t("wsl ip is empty"))
+                                        return
+                                    }
+                                    await doUpdate(row, props.wslIp)
+                                    await loadFirstPage()
+                                }
+                                const isLinux = computed(() => {
+                                    return row.targetAddress === props.wslIp
+                                })
+                                const popSelectOptions = [];
+                                const popSelectHandler = async (key: string) => {
+                                    if (key === 'updateWslIp') {
+                                        await updateAndReload()
+                                    }
+                                }
+                                if (props.wslIp !== row.targetAddress) {
+                                    popSelectOptions.push({
+                                        label: t("Update wsl ip"),
+                                        value: "updateWslIp",
+                                    })
+                                }
+                                let icon;
+                                if (isLinux.value) {
+                                    icon = <NIcon component={LinuxIcon} depth={2}></NIcon>
+                                } else {
+                                    icon = <NIcon component={WindowsIcon} depth={2}></NIcon>
+                                }
+                                let ele = (
+                                    <NSpace justify="center" align="center">
+                                        <NEl tag="span">
+                                            {row.targetAddress}
+                                        </NEl>
+                                        <NSpin show={updateLoading.value}>
+                                            {icon}
+                                        </NSpin>
+                                    </NSpace>
+                                )
+                                if (!isLinux.value) {
+                                    ele = (
+                                        <NPopselect options={popSelectOptions} onUpdateValue={popSelectHandler}>
+                                            {ele}
+                                        </NPopselect>
+                                    )
+                                }
+
+                                return (
+                                    <NSpace justify="center" align="center">
+                                        {ele}
+                                    </NSpace>
+                                )
+                            }
                         },
                         {
                             title: t('Target Port'),
@@ -51,6 +127,7 @@ export default function Table() {
                             key: 'action',
                             align: 'center',
                             render(row) {
+                                const {exec: doDelete, running: deleteLoading} = useTask(deletePortRedirection)
                                 const deleteAndReload = chainedTask(doDelete.bind(null, row), reload)
                                 return (
                                     <NSpace justify="center">

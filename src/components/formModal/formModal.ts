@@ -1,4 +1,5 @@
 import {ref} from "vue";
+import clonedeep from 'lodash.clonedeep'
 
 export interface FormModalConfig<T> {
     title?: string,
@@ -76,7 +77,7 @@ export function useFormModal() {
 
     async function show<T = any>(config: FormModalConfig<T>): Promise<[true, FormModalPositiveReturnType<typeof config>] | [false, FormModalNegativeReturnType<typeof config>]> {
         title.value = config.title ?? ""
-        model.value = config.model
+        model.value = clonedeep(config.model)
         alwaysValidate.value = config.alwaysValidate ?? false
         positiveText.value = config.positiveText
         negativeText.value = config.negativeText

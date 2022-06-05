@@ -28,7 +28,6 @@ n-modal(
 
 <script lang="ts" setup>
 import {ref, type Ref, watch} from "vue";
-import clonedeep from 'lodash.clonedeep'
 
 interface Props {
     component: any,
