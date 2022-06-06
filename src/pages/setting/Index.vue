@@ -2,10 +2,10 @@
 <div class="p-4">
     <n-form>
         <n-form-item :label="t('Language')">
-            <n-select :value="lang" :options="languageOptions" @update:value="(value) => broadcastSetting('lang', value)"></n-select>
+            <n-select :value="lang" :options="languageOptions" @update:value="(value: string) => broadcastSetting('lang', value)"></n-select>
         </n-form-item>
         <n-form-item :label="t('Theme')">
-            <n-select :value="theme" :options="themeOptions" @update:value="(value) => broadcastSetting('theme', value)"></n-select>
+            <n-select :value="theme" :options="themeOptions" @update:value="(value: string) => broadcastSetting('theme', value)"></n-select>
         </n-form-item>
     </n-form>
 </div>
