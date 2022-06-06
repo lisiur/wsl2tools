@@ -10,11 +10,11 @@ export interface PortRedirection {
     targetPort: number | null
 }
 
-export function newPortRedirection(): PortRedirection {
+export function newPortRedirection(targetAddress = ''): PortRedirection {
     return {
         listenAddress: '0.0.0.0',
         listenPort: null,
-        targetAddress: '',
+        targetAddress,
         targetPort: null,
     }
 }
@@ -53,12 +53,13 @@ export async function updatePortRedirectionTargetAddress(pr: PortRedirection, ad
 export async function createPortRedirection(pr: PortRedirection) {
     const command = `netsh interface portproxy add v4tov4 listenport=${pr.listenPort} listenaddress=${pr.listenAddress} connectport=${pr.targetPort} connectaddress=${pr.targetAddress}`;
     await execPowershellCommand(command)
+    await setPortFw(pr.listenPort as number)
 }
 
 export async function deletePortRedirection(pr: PortRedirection) {
-    const listenPort = Number.isNaN(pr.listenPort) ? 'null' : pr.listenPort
-    const command = `netsh interface portproxy delete v4tov4 listenport=${listenPort} listenaddress=${pr.listenAddress}`;
+    const command = `netsh interface portproxy delete v4tov4 listenport=${pr.listenPort} listenaddress=${pr.listenAddress}`;
     await execPowershellCommand(command)
+    await rmPortFw(pr.listenPort as number)
 }
 
 export async function getWsl2Ip() {
@@ -71,4 +72,32 @@ export async function getWsl2Ip() {
         throw new Error(t('Failed to get wsl ip'))
     }
     return output.trim()
+}
+
+function portId(port: number) {
+    return `Wsl-${port}-Port`
+}
+
+export async function setPortFw(port: number) {
+    const id = portId(port)
+    const existCommand = `(Get-NetFirewallRule | %{ $_.DisplayName } | Select-String ${id}).length`
+    let existCount = (await execPowershellCommand(existCommand)).trim()
+    if (existCount !== '0') {
+        await rmPortFw(port)
+    }
+    await addPortFw(port)
+}
+
+async function addPortFw(port: number) {
+    const id = portId(port)
+    const command1 = `New-NetFireWallRule -DisplayName ${id} -Direction Outbound -LocalPort ${port} -Action Allow -Protocol TCP`
+    const command2 = `New-NetFireWallRule -DisplayName ${id} -Direction Inbound -LocalPort ${port} -Action Allow -Protocol TCP`
+    await execPowershellCommand(command1)
+    await execPowershellCommand(command2)
+}
+
+async function rmPortFw(port: number) {
+    const id = portId(port)
+    const command = `Remove-NetFireWallRule -DisplayName ${id}`
+    await execPowershellCommand(command)
 }

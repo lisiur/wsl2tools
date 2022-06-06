@@ -29,6 +29,10 @@ export default {
     "Please input listen port": "请输入监听端口",
     "Please input target address": "请输入目标地址",
     "Please input target port": "请输入目标端口",
+    "Language": "语言",
+    "Theme": "主题",
+    "Chinese": "中文",
+    "English": "英文",
   },
   enUS: {},
 }

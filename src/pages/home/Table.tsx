@@ -47,11 +47,11 @@ export default function useTableUi() {
                 const message = useMessage()
                 const columns = computed<DataTableColumns<PortRedirection>>(() => {
                     return [
-                        {
+                        /* {
                             title: t('Listen Address'),
                             key: 'listenAddress',
                             align: 'center',
-                        },
+                        }, */
                         {
                             title: t('Listen Port'),
                             key: 'listenPort',
@@ -125,12 +125,12 @@ export default function useTableUi() {
                         {
                             title: t('Action'),
                             key: 'action',
-                            align: 'center',
+                            align: 'right',
                             render(row) {
                                 const {exec: doDelete, running: deleteLoading} = useTask(deletePortRedirection)
                                 const deleteAndReload = chainedTask(doDelete.bind(null, row), reload)
                                 return (
-                                    <NSpace justify="center">
+                                    <NSpace justify="end">
                                         <NButton type="primary" size="small" quaternary
                                                  onClick={() => props.onEdit?.(row)}
                                         >

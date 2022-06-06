@@ -1,18 +1,23 @@
-<template lang="pug">
-n-spin(:show="props.config.loading.value")
-    n-data-table(
+<template>
+<n-spin :show="props.config.loading.value">
+    <n-data-table
         v-bind="$attrs"
         :pagination="pagination"
         :paginate-single-page="false"
-    )
-        template(#empty)
-            template(v-if="props.config.loaded.value")
-                template(v-if="!hasEmptySlot")
-                    slot(name="empty")
-                template(v-else)
-                    n-empty
-            span(v-else)
-
+    >
+        <template #empty>
+            <template v-if="props.config.loaded.value">
+                <template v-if="!hasEmptySlot">
+                    <slot name="empty"></slot>
+                </template>
+                <template v-else>
+                    <n-empty></n-empty>
+                </template>
+            </template>
+            <span v-else></span>
+        </template>
+    </n-data-table>
+</n-spin>
 </template>
 
 <script lang="ts" setup>
@@ -31,6 +36,7 @@ interface Props {
         changePageSize: any,
     }
 }
+
 const props = defineProps<Props>()
 
 const slots = useSlots()

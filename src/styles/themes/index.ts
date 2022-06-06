@@ -54,7 +54,9 @@ export function getTheme() {
   return currentTheme
 }
 
-export function setTheme(theme: "common" | "dark") {
+export type ThemeLiteral = keyof typeof themeVars
+
+export function setTheme(theme: ThemeLiteral) {
   currentTheme.value = theme;
   setThemeVars(themeVars[theme]);
 }

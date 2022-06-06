@@ -3,22 +3,24 @@ import {ref, computed} from 'vue'
 import { createI18n } from 'vue-i18n'
 import messages from './messages'
 
-const naiveUiLang = {
+const Lang = {
     zhCN,
     enUS,
 }
 
-const naiveUiDateLang = {
+const DateLang = {
     zhCN: dateZhCN,
     enUS: dateEnUS,
 }
 
-export const currentLang = ref<keyof typeof naiveUiLang>('zhCN')
+export type LangLiteral = keyof typeof Lang
+
+export const currentLang = ref<keyof typeof Lang>('zhCN')
 export const currentNaiveUiLang = computed(() => {
-    return naiveUiLang[currentLang.value]
+    return Lang[currentLang.value]
 })
 export const currentNaiveUiDateLang = computed(() => {
-    return naiveUiDateLang[currentLang.value]
+    return DateLang[currentLang.value]
 })
 
 export const i18n = createI18n({
@@ -29,7 +31,7 @@ export const i18n = createI18n({
     messages,
 })
 
-export function setLocale(lang: keyof typeof naiveUiLang) {
+export function setLocale(lang: LangLiteral) {
     currentLang.value = lang
     i18n.global.locale = lang;
 }

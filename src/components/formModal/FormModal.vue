@@ -1,29 +1,35 @@
-<template lang="pug">
-n-modal(
+<template>
+<n-modal
     v-model:show="props.config.visible.value"
     preset="dialog"
     :title="props.config.title.value"
     :show-icon="false"
-)
-    template(#header)
-        n-space.m-auto
-            span.lg.font-bold {{props.config.title.value}}
-
-    template(#action)
-        n-space.m-auto
-            n-button(
+>
+    <template #header>
+        <n-space class="m-auto">
+            <span class="lg font-bold"> {{ props.config.title.value }}</span>
+        </n-space>
+    </template>
+    <template #action>
+        <n-space class="m-auto">
+            <n-button
                 type="default"
                 :loading="props.config.negativeLoading.value"
                 @click="props.config.negativeHandler"
-            )
-                | {{props.config.negativeText.value}}
-            n-button(
+            >
+                {{ props.config.negativeText.value }}
+            </n-button>
+            <n-button
                 type="primary"
                 :loading="props.config.positiveLoading.value"
                 @click="props.config.positiveHandler"
-            )
-                | {{props.config.positiveText.value}}
-    Component(ref="formRef" :is="props.component" :model="props.config.model.value")
+            >
+                {{ props.config.positiveText.value }}
+            </n-button>
+        </n-space>
+    </template>
+    <Component ref="formRef" :is="props.component" :model="props.config.model.value"></Component>
+</n-modal>
 </template>
 
 <script lang="ts" setup>

@@ -1,14 +1,17 @@
-<template lang="pug">
-n-config-provider(
-  :theme="currentNaiveUiTheme"
-  :theme-overrides="naiveUiOverrides"
-  :locale="currentNaiveUiLang"
-  :date-locale="currentNaiveUiDateLang"
-  :breakpoints="breakpoints"
-)
-  n-dialog-provider
-    n-message-provider
-      router-view
+<template>
+<n-config-provider
+    :theme="currentNaiveUiTheme"
+    :theme-overrides="naiveUiOverrides"
+    :locale="currentNaiveUiLang"
+    :date-locale="currentNaiveUiDateLang"
+    :breakpoints="breakpoints"
+>
+    <n-dialog-provider>
+        <n-message-provider>
+            <router-view></router-view>
+        </n-message-provider>
+    </n-dialog-provider>
+</n-config-provider>
 </template>
 
 <script lang="ts" setup>
@@ -28,8 +31,8 @@ setTheme('common')
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 </style>
