@@ -33,6 +33,8 @@ export default {
     "Theme": "主题",
     "Chinese": "中文",
     "English": "英文",
+    "Light": "亮",
+    "Dark": "暗",
   },
   enUS: {},
 }

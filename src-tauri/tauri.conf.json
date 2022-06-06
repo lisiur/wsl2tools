@@ -58,6 +58,8 @@
       {
         "label": "main",
         "fullscreen": false,
+        "decorations": false,
+        "transparent": true,
         "resizable": true,
         "title": "Wsl2 Tools"
       }

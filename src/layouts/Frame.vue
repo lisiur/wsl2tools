@@ -1,5 +1,5 @@
 <template>
-    <n-layout class="h-full">
+    <n-layout class="h-full rounded-lg">
         <Header></Header>
         <router-view></router-view>
         <Footer></Footer>

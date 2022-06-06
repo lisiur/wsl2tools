@@ -12,6 +12,14 @@ const router = createRouter({
                     path: "",
                     name: "Home",
                     component: () => import("@/pages/home/Index"),
+                    meta: {
+                        title: "Wsl2 Tools",
+                        show_title: true,
+                        draggable: true,
+                        min_button: true,
+                        max_button: true,
+                        close_button: true,
+                    }
                 },
             ],
         },
@@ -23,6 +31,13 @@ const router = createRouter({
                     path: "",
                     name: "Setting",
                     component: () => import("@/pages/setting/Index.vue"),
+                    meta: {
+                        show_title: false,
+                        draggable: false,
+                        min_button: false,
+                        max_button: false,
+                        close_button: false,
+                    }
                 },
             ],
         },
