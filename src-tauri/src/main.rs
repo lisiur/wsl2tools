@@ -3,8 +3,6 @@ all(not(debug_assertions), target_os = "windows"),
 windows_subsystem = "windows"
 )]
 
-use tauri::{CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, WindowBuilder, WindowUrl};
-
 mod plugins;
 mod system_tray;
 

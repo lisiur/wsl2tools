@@ -1,4 +1,4 @@
-use tauri::{App, AppHandle, CustomMenuItem, Manager, PhysicalPosition, Position, SystemTray, SystemTrayEvent, SystemTrayMenu, WindowBuilder, WindowUrl, Wry};
+use tauri::{AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, WindowBuilder, WindowUrl, Wry};
 
 pub fn init() -> SystemTray {
     let tray_menu = SystemTrayMenu::new()
@@ -26,7 +26,7 @@ pub fn event_handler(app: &AppHandle<Wry>, event: SystemTrayEvent) {
         } else {
             let window_width = 480.0;
             let window_height = 680.0;
-            let window = WindowBuilder::new(app, "setting".to_string(), WindowUrl::App("index.html/#/setting".into()))
+            WindowBuilder::new(app, "setting".to_string(), WindowUrl::App("index.html/#/setting".into()))
                 .title("Setting")
                 .decorations(false)
                 .skip_taskbar(true)
@@ -36,12 +36,6 @@ pub fn event_handler(app: &AppHandle<Wry>, event: SystemTrayEvent) {
                 .inner_size(window_width, window_height)
                 .transparent(true)
                 .build().unwrap();
-            // let monitor = window.current_monitor().unwrap();
-            // if let Some(monitor) = monitor {
-            //     let window_pos_x = monitor.size().width as f64 - window_width;
-            //     let window_pos_y = monitor.size().height as f64 - window_height;
-            //     window.set_position(Position::Physical(PhysicalPosition{x: window_pos_x as i32, y: window_pos_y as i32})).unwrap();
-            // }
         }
     };
     match event {
