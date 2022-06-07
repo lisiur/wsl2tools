@@ -21,9 +21,8 @@ import {breakpoints} from './compositions/breakpoint'
 import {currentNaiveUiLang, currentNaiveUiDateLang} from './i18n'
 import {setTheme, getTheme, getNaiveUiThemeOverrides} from './styles/themes'
 
-const currentTheme = getTheme()
 const naiveUiOverrides = getNaiveUiThemeOverrides()
-const currentNaiveUiTheme = computed(() => currentTheme.value === 'dark' ? darkTheme : null);
+const currentNaiveUiTheme = computed(() => getTheme() === 'dark' ? darkTheme : null);
 
 setTheme('common')
 

@@ -1,5 +1,5 @@
 <template>
-<n-form ref="formRef" label-placement="left" label-width="auto" :model="model" :rules="rules">
+<n-form ref="formRef" label-placement="left" label-width="auto" require-mark-placement="right-hanging" :model="model" :rules="rules">
     <!-- <n-form-item :label="t('Listen Address')" path="listenAddress">
         <n-input v-model:value="model.listenAddress"></n-input>
     </n-form-item> -->
@@ -15,7 +15,7 @@
         </n-input-group>
     </n-form-item> -->
     <n-form-item :label="t('Target Port')" path="targetPort">
-        <n-input-number v-model:value="model.targetPort" :show-button="false"></n-input-number>
+        <n-input-number v-model:value="model.targetPort" :placeholder="targetPortPlaceholder" :show-button="false"></n-input-number>
     </n-form-item>
 </n-form>
 </template>
@@ -59,13 +59,17 @@ const rules = computed(() => {
             trigger: ['input'],
             message: t('Please input target address'),
         }],
-        targetPort: [{
-            type: 'number',
-            required: true,
-            trigger: ['input'],
-            message: t('Please input target port'),
-        }],
+        // targetPort: [{
+        //     type: 'number',
+        //     required: true,
+        //     trigger: ['input'],
+        //     message: t('Please input target port'),
+        // }],
     }
+})
+
+const targetPortPlaceholder = computed(() => {
+    return model.value?.listenPort || t('Please input')
 })
 
 const {exec: doGetWsl2Ip, running: getWslIpLoading} = useTask(getWsl2Ip, message.error)

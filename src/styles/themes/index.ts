@@ -51,7 +51,7 @@ const currentThemeVars = computed(() => {
 })
 
 export function getTheme() {
-  return currentTheme
+  return currentTheme.value
 }
 
 export type ThemeLiteral = keyof typeof themeVars

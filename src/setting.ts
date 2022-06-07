@@ -28,12 +28,14 @@ export const lang = ref<LangLiteral>('enUS')
                 theme.value = value
                 setTheme(value)
                 await store.set('theme', value)
+                await store.save()
                 break
             }
             case 'lang': {
                 lang.value = value
                 setLocale(value)
                 await store.set('lang', value)
+                await store.save()
                 break
             }
             default: {

@@ -33,6 +33,7 @@ onMounted(async () => {
         const x = Math.floor(monitorWidth - width) - 2
         const y = Math.floor(monitorHeight - height) - 62
         await appWindow.setPosition(new PhysicalPosition(x, y))
+        await appWindow.show()
     }
 })
 

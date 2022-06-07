@@ -35,6 +35,7 @@ export default {
     "English": "英文",
     "Light": "亮",
     "Dark": "暗",
+    "Please input": "请输入"
   },
   enUS: {},
 }

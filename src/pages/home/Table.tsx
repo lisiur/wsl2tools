@@ -58,6 +58,11 @@ export default function useTableUi() {
                             align: 'center',
                         },
                         {
+                            title: t('Target Port'),
+                            key: 'targetPort',
+                            align: 'center',
+                        },
+                        {
                             title: t('Target Address'),
                             key: 'targetAddress',
                             align: 'center',
@@ -88,17 +93,19 @@ export default function useTableUi() {
                                 }
                                 let icon;
                                 if (isLinux.value) {
-                                    icon = <NIcon component={LinuxIcon} depth={2}></NIcon>
+                                    icon = <NIcon component={LinuxIcon} depth={1}></NIcon>
                                 } else {
-                                    icon = <NIcon component={WindowsIcon} depth={2}></NIcon>
+                                    icon = <NIcon component={WindowsIcon} depth={1}></NIcon>
                                 }
                                 let ele = (
-                                    <NSpace justify="center" align="center">
+                                    <NSpace justify="center" align="center" itemStyle={{display: 'flex', alignItems: 'center'}}>
                                         <NEl tag="span">
                                             {row.targetAddress}
                                         </NEl>
                                         <NSpin show={updateLoading.value}>
-                                            {icon}
+                                            <div class="flex-center">
+                                                {icon}
+                                            </div>
                                         </NSpin>
                                     </NSpace>
                                 )
@@ -116,11 +123,6 @@ export default function useTableUi() {
                                     </NSpace>
                                 )
                             }
-                        },
-                        {
-                            title: t('Target Port'),
-                            key: 'targetPort',
-                            align: 'center',
                         },
                         {
                             title: t('Action'),

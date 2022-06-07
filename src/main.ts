@@ -7,4 +7,3 @@ import router from './router'
 import './setting'
 
 createApp(App).use(i18n).use(router).mount('#app')
-

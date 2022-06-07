@@ -31,6 +31,7 @@ pub fn event_handler(app: &AppHandle<Wry>, event: SystemTrayEvent) {
                 .decorations(false)
                 .skip_taskbar(true)
                 .always_on_top(true)
+                .visible(false)
                 .resizable(false)
                 .inner_size(window_width, window_height)
                 .transparent(true)

@@ -41,7 +41,7 @@ export async function updatePortRedirection(newPr: PortRedirection, oldPr: PortR
         await deletePortRedirection(oldPr)
         await createPortRedirection(newPr)
     } else {
-        const command = `netsh interface portproxy set v4tov4 listenport=${oldPr.listenPort} listenaddress=${oldPr.listenAddress} connectport=${newPr.targetPort} connectaddress=${newPr.targetAddress}`;
+        const command = `netsh interface portproxy set v4tov4 listenport=${oldPr.listenPort} listenaddress=${oldPr.listenAddress} connectport=${newPr.targetPort || oldPr.listenPort} connectaddress=${newPr.targetAddress}`;
         await execPowershellCommand(command)
     }
 }
@@ -51,7 +51,7 @@ export async function updatePortRedirectionTargetAddress(pr: PortRedirection, ad
 }
 
 export async function createPortRedirection(pr: PortRedirection) {
-    const command = `netsh interface portproxy add v4tov4 listenport=${pr.listenPort} listenaddress=${pr.listenAddress} connectport=${pr.targetPort} connectaddress=${pr.targetAddress}`;
+    const command = `netsh interface portproxy add v4tov4 listenport=${pr.listenPort} listenaddress=${pr.listenAddress} connectport=${pr.targetPort || pr.listenPort} connectaddress=${pr.targetAddress}`;
     await execPowershellCommand(command)
     await setPortFw(pr.listenPort as number)
 }
