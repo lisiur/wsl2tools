@@ -1,8 +1,14 @@
 <template>
     <n-layout class="h-full rounded-lg">
-        <Header></Header>
-        <router-view></router-view>
-        <Footer></Footer>
+        <n-layout-header>
+            <Header></Header>
+        </n-layout-header>
+        <n-layout-content content-style="padding: 1rem">
+            <router-view></router-view>
+        </n-layout-content>
+        <n-layout-footer>
+            <Footer></Footer>
+        </n-layout-footer>
     </n-layout>
 </template>
 

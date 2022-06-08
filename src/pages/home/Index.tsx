@@ -74,7 +74,7 @@ export default defineComponent({
             }
         }
         return () => (
-            <div class="p-4">
+            <div>
                 <NGrid y-gap={12} cols={1}>
                     <NGi>
                         <NSpace justify="end">

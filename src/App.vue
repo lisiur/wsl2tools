@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts" setup>
-import {computed} from "vue";
+import {computed, onMounted} from "vue";
 import {NConfigProvider, darkTheme,} from "naive-ui";
 import {breakpoints} from './compositions/breakpoint'
 import {currentNaiveUiLang, currentNaiveUiDateLang} from './i18n'
@@ -25,6 +25,10 @@ const naiveUiOverrides = getNaiveUiThemeOverrides()
 const currentNaiveUiTheme = computed(() => getTheme() === 'dark' ? darkTheme : null);
 
 setTheme('common')
+
+onMounted(() => {
+    document.querySelector("#preloading")?.remove()
+})
 
 </script>
 

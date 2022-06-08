@@ -1,16 +1,28 @@
 <template>
 <div class="px-4 py-2 user-select-[none]" v-bind="attrs">
-    <n-grid v-bind="attrs" :cols="2" class="height-[2rem]">
+    <n-grid v-bind="attrs" :cols="2">
         <n-gi v-bind="attrs">
-            <n-space align="center" class="h-full" v-bind="attrs">
+            <n-space align="center" class="height-[2rem]" v-bind="attrs">
                 <span v-if="show_title">{{title}}</span>
             </n-space>
         </n-gi>
         <n-gi v-bind="attrs">
-            <n-space justify="end" align="center" item-style="display: flex; align-items:center;" v-bind="attrs" class="h-full">
-                <n-icon :component="WindowMinimize" :depth="iconDepth" class="cursor-pointer" @click="appWindow.minimize()" v-if="min_button"></n-icon>
-                <n-icon :component="WindowMaximize" :depth="iconDepth" class="cursor-pointer" @click="appWindow.toggleMaximize()" v-if="max_button"></n-icon>
-                <n-icon :component="WindowClose" :depth="iconDepth" class="cursor-pointer" @click="appWindow.hide()" v-if="close_button"></n-icon>
+            <n-space justify="end" align="center" class="height-[2rem]" item-style="display: flex; align-items:center;" v-bind="attrs">
+                <n-button quaternary size="tiny">
+                    <template #icon>
+                        <n-icon :component="WindowMinimize" :depth="iconDepth" class="cursor-pointer" @click="appWindow.minimize()" v-if="min_button"></n-icon>
+                    </template>
+                </n-button>
+                <n-button quaternary size="tiny">
+                    <template #icon>
+                        <n-icon :component="WindowMaximize" :depth="iconDepth" class="cursor-pointer" @click="appWindow.toggleMaximize()" v-if="max_button"></n-icon>
+                    </template>
+                </n-button>
+                <n-button quaternary size="tiny">
+                    <template #icon>
+                        <n-icon :component="WindowClose" :depth="iconDepth" class="cursor-pointer" @click="appWindow.hide()" v-if="close_button"></n-icon>
+                    </template>
+                </n-button>
             </n-space>
         </n-gi>
     </n-grid>
